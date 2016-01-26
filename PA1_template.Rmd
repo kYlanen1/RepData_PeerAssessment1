@@ -1,20 +1,96 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-
+# Reproducible Research: Peer Assessment 1
+The following packages must be loaded into R
+```{r, echo=TRUE}
+library(lubridate)    ## For dates
+library(ggplot2)      ## For plottingt
+library(dplyr)        ## Used by group_by and %>%
+```
 
 ## Loading and preprocessing the data
+It is assumed that the reader has set the correct working directory in R by function setwd()
+```{r, echo=TRUE}
+df <- read.csv("activity.csv", header = TRUE, sep = ',')
+```
+A first view and knowledge of the data is obtained by function str() and head()
+```{r, echo=TRUE}
+str(df)
+'data.frame':	17568 obs. of  3 variables:
+ $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+head(df)
+  steps       date interval
+1    NA 2012-10-01        0
+2    NA 2012-10-01        5
+3    NA 2012-10-01       10
+4    NA 2012-10-01       15
+5    NA 2012-10-01       20
+6    NA 2012-10-01       25
+```
+Convert the date from a factor to a date format and remove all rows from data set with step == NA  
+and store the result in new object df_NoNA
+```{r, echo=TRUE}
+df$date <- ymd(df$date)
+df_NoNA<-na.omit(df)
+str(df_NoNA)
+'data.frame':	15264 obs. of  3 variables:
+ $ steps   : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ date    : POSIXct, format: "2012-10-02" "2012-10-02" "2012-10-02" "2012-10-02" ...
+ $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+ - attr(*, "na.action")=Class 'omit'  Named int [1:2304] 1 2 3 4 5 6 7 8 9 10 ...
+  .. ..- attr(*, "names")= chr [1:2304] "1" "2" "3" "4" ...
+```
+2304 rows are omitted due to NA in df  
+15264 rows in data frame df_NoNA
 
-
-
+```{r, echo=TRUE}
+head(df_NoNA)
+    steps       date interval
+289     0 2012-10-02        0
+290     0 2012-10-02        5
+291     0 2012-10-02       10
+292     0 2012-10-02       15
+293     0 2012-10-02       20
+294     0 2012-10-02       25
+```
 ## What is mean total number of steps taken per day?
+Object StepsPerDay gives number of steps per day by grouping df_NoNA by date and summarize  
+the steps
+```{r, echo=TRUE}
+StepsPerDay<- df_NoNA %>% group_by(date) %>% summarise(step=sum(steps))
+head(StepsPerDay)
+Source: local data frame [6 x 2]
+        date  step
+      (time) (int)
+1 2012-10-02   126
+2 2012-10-03 11352
+3 2012-10-04 12116
+4 2012-10-05 13294
+5 2012-10-06 15420
+6 2012-10-07 11015
+```
+A histogram gives the distribution of steps per day
+```{r, echo=TRUE}
+HistDate<-ggplot(StepsPerDay, aes(date, step)) + geom_bar(stat = "identity", colour = "steelblue", fill = "steelblue")
++ labs(title = "Total Number of Steps Per Day", x = "Date", y = "# Steps")  
+HistDate
+```
+Plot here....  
 
-
+The mean total of number of steps per day is 10766.19  
+```{r, echo=TRUE}
+mean(StepsPerDay$step)
+[1] 10766.19
+```
+The median of the total number of steps per day is given by the 27th observation (half of the total # of observations)  
+when the data is ordered by StepsPerDay and the value is 10765  
+```{r, echo=TRUE}
+median(StepsPerDay$step)
+[1] 10765
+```
 
 ## What is the average daily activity pattern?
+
 
 
 
