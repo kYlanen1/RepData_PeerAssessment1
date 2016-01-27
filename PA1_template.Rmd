@@ -54,7 +54,7 @@ head(df_NoNA)
 294     0 2012-10-02       25
 ```
 ## What is mean total number of steps taken per day?
-Object StepsPerDay gives number of steps per day by grouping df_NoNA by date and summarize  
+Object StepsPerDay gives the number of steps per day by grouping df_NoNA by date and summarize  
 the steps
 ```{r, echo=TRUE}
 StepsPerDay<- df_NoNA %>% group_by(date) %>% summarise(step=sum(steps))
@@ -90,12 +90,102 @@ median(StepsPerDay$step)
 ```
 
 ## What is the average daily activity pattern?
+The object DayActivity gives the number of steps per interval (5 min interval) averaged over all days 
+```{r, echo=TRUE}
+DayActivity<-df_NoNA %>% group_by(interval) %>% summarise(step=mean(steps))
+head(DayActivity)
+Source: local data frame [6 x 2]
 
+  interval      step
+     (int)     (dbl)
+1        0 1.7169811
+2        5 0.3396226
+3       10 0.1320755
+4       15 0.1509434
+5       20 0.0754717
+6       25 2.0943396
+```
+A histogram gives the distribution of steps per interval (time of day)
+HistDayActivity<-ggplot(DayActivity, aes(interval,step)) + geom_line(colour = "steelblue")+ labs(title = "Avg steps during a day", x = "Time of day", y = "# Steps")
 
+Plot here.....
 
+The most active time of the day is at 8:35 AM with 206 steps in average.
+```{r, echo=TRUE}
+DayActivity[which.max(DayActivity$step),]
+Source: local data frame [1 x 2]
+  interval     step
+     (int)    (dbl)
+1      835 206.1698
+```
 
 ## Imputing missing values
+The numer of missing values NA in the original data set df is 2304 (summarize all rows having NAs)
+```{r, echo=TRUE}
+sum(is.na(df[1]))
+```
 
+The missing values are replaced by the mean total of number of steps per day (10766.19) divided by  
+number of intervals per day (288)  
+```{r, echo=TRUE}
+df = transform(df, steps = ifelse(is.na(steps), mean(steps, na.rm=TRUE), steps))
+```
+Execute sum(is.na(df[1])) once again gives zero meaning zero rows containing NA.
+```{r, echo=TRUE}
+sum(is.na(df[1]))
+[1] 0
+```
 
+Object StepsPerDayFull gives the number of steps per day by grouping the modified df by date and summarize  
+the steps
+```{r, echo=TRUE}
+StepsPerDayFull<- df %>% group_by(date) %>% summarise(step=sum(steps))
+head(StepsPerDayFull)
+Source: local data frame [6 x 2]
+        date     step
+      (time)    (dbl)
+1 2012-10-01 10766.19
+2 2012-10-02   126.00
+3 2012-10-03 11352.00
+4 2012-10-04 12116.00
+5 2012-10-05 13294.00
+6 2012-10-06 15420.00
+```
+Note the 1st of Oct now has 10766 steps, which is equal to the mean total of number of steps per day  
+since in the original data set no steps were recorded for 2012-10-01
 
+The histogram is given by
+```{r, echo=TRUE}
+HistDateFull<-ggplot(StepsPerDayFull, aes(date, step)) + geom_bar(stat = "identity", colour = "steelblue", fill = "steelblue") + labs(title = "Total Number of Steps Per Day", x = "Date", y = "# Steps")
+```
+
+Plot here...
+
+The mean and the median is now 10766.19. The mean is unchanged and the median has changed from 10765 to 10766.19  
+
+```{r, echo=TRUE}
+mean(StepsPerDayFull$step)
+[1] 10766.19
+median(StepsPerDayFull$step)
+[1] 10766.19
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+Set the date/time related display language to English
+```{r, echo=TRUE}
+Sys.setlocale("LC_TIME","English")
+```
+Addes a column named weektype to calculate each row in df if the day is a weekday or weekend 
+```{r, echo=TRUE}
+df<-mutate(df, weektype = ifelse(weekdays(as.Date(df$date))=="Saturday" | weekdays(as.Date(df$date))=="Sunday", "weekend", "weekday"))
+head(df)
+    steps       date interval weektype
+1 37.3826 2012-10-01        0  weekday
+2 37.3826 2012-10-01        5  weekday
+3 37.3826 2012-10-01       10  weekday
+4 37.3826 2012-10-01       15  weekday
+5 37.3826 2012-10-01       20  weekday
+6 37.3826 2012-10-01       25  weekday
+```
+The object WeekTypeActivity groups df by interval and weektype and summarize by steps so it will be possible to plot the two  different week types.
+
+WeekTypeActivity<-df %>% group_by(interval,weektype) %>% summarise(step=mean(steps))
