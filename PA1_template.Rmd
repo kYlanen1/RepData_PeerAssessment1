@@ -72,10 +72,9 @@ Source: local data frame [6 x 2]
 A histogram gives the distribution of steps per day
 ```{r, echo=TRUE}
 HistDate<-ggplot(StepsPerDay, aes(date, step)) + geom_bar(stat = "identity", colour = "steelblue", fill = "steelblue")
-+ labs(title = "Total Number of Steps Per Day", x = "Date", y = "# Steps")  
-HistDate
++ labs(title = "Total Number of Steps Per Day", x = "Date", y = "# Steps")
 ```
-Plot here....  
+![Sample panel plot](instructions_fig/HistDate.png)
 
 The mean total of number of steps per day is 10766.19  
 ```{r, echo=TRUE}
@@ -106,9 +105,10 @@ Source: local data frame [6 x 2]
 6       25 2.0943396
 ```
 A histogram gives the distribution of steps per interval (time of day)
+```{r, echo=TRUE}
 HistDayActivity<-ggplot(DayActivity, aes(interval,step)) + geom_line(colour = "steelblue")+ labs(title = "Avg steps during a day", x = "Time of day", y = "# Steps")
-
-Plot here.....
+```
+![Sample panel plot](instructions_fig/HistDayActivity.png)
 
 The most active time of the day is at 8:35 AM with 206 steps in average.
 ```{r, echo=TRUE}
@@ -159,7 +159,7 @@ The histogram is given by
 HistDateFull<-ggplot(StepsPerDayFull, aes(date, step)) + geom_bar(stat = "identity", colour = "steelblue", fill = "steelblue") + labs(title = "Total Number of Steps Per Day", x = "Date", y = "# Steps")
 ```
 
-Plot here...
+![Sample panel plot](instructions_fig/HistDateFull.png)
 
 The mean and the median is now 10766.19. The mean is unchanged and the median has changed from 10765 to 10766.19  
 
@@ -206,3 +206,4 @@ A panel plot of the two week activities is done by using the facet_grid() functi
 ```{r, echo=TRUE}
 HistWeekTypeActivity<-ggplot(WeekTypeActivity, aes(interval,step)) + geom_line(colour = "steelblue")+ labs(x = "Time of day", y = "# Steps") + facet_grid(weektype ~.)
 ```
+![Sample panel plot](instructions_fig/HistWeekTypeActivity.png)
