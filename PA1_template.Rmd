@@ -187,5 +187,22 @@ head(df)
 6 37.3826 2012-10-01       25  weekday
 ```
 The object WeekTypeActivity groups df by interval and weektype and summarize by steps so it will be possible to plot the two  different week types.
-
+```{r, echo=TRUE}
 WeekTypeActivity<-df %>% group_by(interval,weektype) %>% summarise(step=mean(steps))
+head(WeekTypeActivity)
+Source: local data frame [6 x 3]
+Groups: interval [3]
+
+  interval weektype     step
+     (int)    (chr)    (dbl)
+1        0  weekday 7.006569
+2        0  weekend 4.672825
+3        5  weekday 5.384347
+4        5  weekend 4.672825
+5       10  weekday 5.139902
+6       10  weekend 4.672825
+```
+A panel plot of the two week activities is done by using the facet_grid() function with argument (weektype ~.) 
+```{r, echo=TRUE}
+HistWeekTypeActivity<-ggplot(WeekTypeActivity, aes(interval,step)) + geom_line(colour = "steelblue")+ labs(x = "Time of day", y = "# Steps") + facet_grid(weektype ~.)
+```
